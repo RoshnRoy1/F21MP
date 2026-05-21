@@ -1,0 +1,10 @@
+anthropic
+xgboost
+shap
+pandas
+scikit-learn
+scipy
+python-dotenv
+matplotlib
+ipykernel
+ucimlrepo
