@@ -15,30 +15,32 @@ CACHE_DIR = os.path.join(os.path.dirname(__file__), "..", "cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 NOVICE_TEMPLATE = (
-    "A machine learning model made a credit decision about someone. "
-    "Here are the factors that influenced it (feature: SHAP value):\n{shap_summary}\n\n"
-    "Explain this decision to someone with zero finance or ML background. "
+    "You applied for a credit decision and a machine learning model assessed your application. "
+    "Here are the factors that influenced the decision about you (feature: SHAP value):\n{shap_summary}\n\n"
+    "Explain this decision to the applicant as if they have zero finance or ML background. "
     "Use plain English and everyday analogies. No numbers, no jargon. Keep it under 150 words."
 )
 
 EXPERT_TEMPLATE = (
-    "A machine learning model made a credit decision about someone. "
-    "Here are the SHAP values for each feature:\n{shap_summary}\n\n"
-    "Explain this decision to a data scientist. Reference the exact feature names and their SHAP values. "
+    "You applied for a credit decision and a machine learning model assessed your application. "
+    "Here are the SHAP values for each feature in your case:\n{shap_summary}\n\n"
+    "Explain this decision to the applicant as if they are a data scientist. "
+    "Reference the exact feature names and their SHAP values. "
     "Be precise about direction and magnitude. Keep it under 150 words."
 )
 
 INCOME_NOVICE_TEMPLATE = (
-    "A machine learning model made an income prediction about someone. "
-    "Here are the factors that influenced it (feature: SHAP value):\n{shap_summary}\n\n"
-    "Explain this prediction to someone with zero finance or ML background. "
+    "A machine learning model predicted your income level based on your personal and professional details. "
+    "Here are the factors that influenced the prediction about you (feature: SHAP value):\n{shap_summary}\n\n"
+    "Explain this prediction to the person as if they have zero finance or ML background. "
     "Use plain English and everyday analogies. No numbers, no jargon. Keep it under 150 words."
 )
 
 INCOME_EXPERT_TEMPLATE = (
-    "A machine learning model made an income prediction about someone. "
-    "Here are the SHAP values for each feature:\n{shap_summary}\n\n"
-    "Explain this prediction to a data scientist. Reference the exact feature names and their SHAP values. "
+    "A machine learning model predicted your income level based on your personal and professional details. "
+    "Here are the SHAP values for each feature in your case:\n{shap_summary}\n\n"
+    "Explain this prediction to the person as if they are a data scientist. "
+    "Reference the exact feature names and their SHAP values. "
     "Be precise about direction and magnitude. Keep it under 150 words."
 )
 
