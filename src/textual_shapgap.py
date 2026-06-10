@@ -427,22 +427,34 @@ def process_dataset(explanations_path: str, shap_path: str, feature_path: str,
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    german_output = os.path.join(BASE, "data", "german_shapgap_scores.csv")
+
     process_dataset(
         explanations_path=os.path.join(BASE, "data", "german_explanations.csv"),
         shap_path=os.path.join(BASE, "data", "german_shap_values.csv"),
         feature_path=os.path.join(BASE, "data", "german_X_test.csv"),
         synonym_map=GERMAN_SYNONYMS,
-        output_path=os.path.join(BASE, "data", "german_shapgap_scores.csv"),
+        output_path=german_output,
         name="german",
     )
 
-    process_dataset(
-        explanations_path=os.path.join(BASE, "data", "adult_explanations.csv"),
-        shap_path=os.path.join(BASE, "data", "adult_shap_values.csv"),
-        feature_path=os.path.join(BASE, "data", "adult_X_test.csv"),
-        synonym_map=ADULT_SYNONYMS,
-        output_path=os.path.join(BASE, "data", "adult_shapgap_scores.csv"),
-        name="adult",
+    # Build t-test ready CSV: one row per instance, novice and expert meaning_loss side by side
+    scores = pd.read_csv(german_output)
+    novice = scores[scores["persona"] == "Novice"][["instance_id", "cosine_similarity"]].rename(
+        columns={"cosine_similarity": "novice_meaning_loss"}
     )
+    expert = scores[scores["persona"] == "Expert"][["instance_id", "cosine_similarity"]].rename(
+        columns={"cosine_similarity": "expert_meaning_loss"}
+    )
+    novice["novice_meaning_loss"] = (1 - novice["novice_meaning_loss"]) / 2
+    expert["expert_meaning_loss"] = (1 - expert["expert_meaning_loss"]) / 2
+    ttest_df = novice.merge(expert, on="instance_id")
+    ttest_path = os.path.join(BASE, "data", "german_ttest_ready.csv")
+    ttest_df.to_csv(ttest_path, index=False)
+    print(f"\n[german] T-test CSV saved → {ttest_path}  ({len(ttest_df)} pairs)")
+    print(f"  novice  mean_meaning_loss={ttest_df['novice_meaning_loss'].mean():.4f}"
+          f"  std={ttest_df['novice_meaning_loss'].std():.4f}")
+    print(f"  expert  mean_meaning_loss={ttest_df['expert_meaning_loss'].mean():.4f}"
+          f"  std={ttest_df['expert_meaning_loss'].std():.4f}")
 
     print("\nTextual ShapGAP complete")

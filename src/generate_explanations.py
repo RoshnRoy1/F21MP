@@ -15,16 +15,16 @@ CACHE_DIR = os.path.join(os.path.dirname(__file__), "..", "cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 NOVICE_TEMPLATE = (
-    "You applied for a credit decision and a machine learning model assessed your application. "
+    "You applied for credit and a machine learning model assessed your application. "
     "Here are the factors that influenced the decision about you (feature: SHAP value):\n{shap_summary}\n\n"
-    "Explain this decision to the applicant as if they have zero finance or ML background. "
+    "Explain this decision directly to the applicant as if they have no finance or technical background. "
     "Use plain English and everyday analogies. No numbers, no jargon. Keep it under 150 words."
 )
 
 EXPERT_TEMPLATE = (
-    "You applied for a credit decision and a machine learning model assessed your application. "
+    "You applied for credit and a machine learning model assessed your application. "
     "Here are the SHAP values for each feature in your case:\n{shap_summary}\n\n"
-    "Explain this decision to the applicant as if they are a data scientist. "
+    "Explain this decision directly to the applicant as if they have a data science background. "
     "Reference the exact feature names and their SHAP values. "
     "Be precise about direction and magnitude. Keep it under 150 words."
 )
@@ -32,14 +32,14 @@ EXPERT_TEMPLATE = (
 INCOME_NOVICE_TEMPLATE = (
     "A machine learning model predicted your income level based on your personal and professional details. "
     "Here are the factors that influenced the prediction about you (feature: SHAP value):\n{shap_summary}\n\n"
-    "Explain this prediction to the person as if they have zero finance or ML background. "
+    "Explain this prediction directly to the person as if they have no finance or technical background. "
     "Use plain English and everyday analogies. No numbers, no jargon. Keep it under 150 words."
 )
 
 INCOME_EXPERT_TEMPLATE = (
     "A machine learning model predicted your income level based on your personal and professional details. "
     "Here are the SHAP values for each feature in your case:\n{shap_summary}\n\n"
-    "Explain this prediction to the person as if they are a data scientist. "
+    "Explain this prediction directly to the person as if they have a data science background. "
     "Reference the exact feature names and their SHAP values. "
     "Be precise about direction and magnitude. Keep it under 150 words."
 )
@@ -85,7 +85,7 @@ def call_groq(prompt):
             if "429" in msg or "rate_limit" in msg.lower():
                 match = re.search(r"try again in (\d+)m(\d+(?:\.\d+)?)s", msg)
                 if match:
-                    wait = int(match.group(1)) * 60 + float(match.group(2)) + 5
+                    wait = int(match.group(1)) * 60 + float(match.group(2)) + 1
                 else:
                     wait = 60
                 print(f"Rate limit hit — waiting {wait:.0f}s...")
@@ -116,6 +116,7 @@ def generate_for_dataset(shap_path, feature_path, output_path, dataset_name,
 
         if (i + 1) % 10 == 0:
             print(f"[{dataset_name}] Processed {i + 1}/{len(shap_df)} instances")
+            pd.DataFrame(rows).to_csv(output_path, index=False)
 
     pd.DataFrame(rows).to_csv(output_path, index=False)
     print(f"[{dataset_name}] Saved {len(rows)} explanations to {output_path}")
